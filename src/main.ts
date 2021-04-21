@@ -9,7 +9,7 @@ Vue.prototype.$axios = axios;
 Vue.mixin({
   methods: {
     currentPageUrl() {
-      return `${window.location.protocol}//${window.location.hostname}:3000/anime`
+      return `${window.location.protocol}//${window.location.hostname}/anime`
     },
     capitalize(nameOfAnime) {
       nameOfAnime = nameOfAnime.split(" ");
