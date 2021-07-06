@@ -3,9 +3,11 @@
     .head
       .content
         .information-container
-          h1 {{ this.capitalize(this.$route.params.name) }}
+          h1 {{ this.capitalize((this.$route.params.name).split("-").join(" ")) }}
         .thumbnail-container
           img(:src="this.thumbnailUrl")
+        .description-container
+          h2(v-for="desc in this.description") {{ desc }}
       .overlay
     
     .main
@@ -23,12 +25,22 @@ export default {
   data() {
     return {
       episodeList: [],
-      thumbnailUrl: ""
+      thumbnailUrl: "",
+      description: []
     }
+  },
+  async beforeRouteUpdate (to, from, next) {
+    this.thumbnailUrl = (await this.$axios.get(`${this.currentPageUrl()}/api/${to.params.name}/thumbnail`)).data;
+    this.episodeList = (await this.$axios.get(`${this.currentPageUrl()}/api/${to.params.name}/episodeList`)).data;
+    console.log((await this.$axios.get(`${this.currentPageUrl()}/api/${this.$route.params.name}/description`)))
+    this.description = (await this.$axios.get(`${this.currentPageUrl()}/api/${to.params.name}/description`)).data.split("\n");
+    next()
   },
   async created() {
     this.thumbnailUrl = (await this.$axios.get(`${this.currentPageUrl()}/api/${this.$route.params.name}/thumbnail`)).data;
     this.episodeList = (await this.$axios.get(`${this.currentPageUrl()}/api/${this.$route.params.name}/episodeList`)).data;
+    console.log((await this.$axios.get(`${this.currentPageUrl()}/api/${this.$route.params.name}/description`)))
+    this.description = (await this.$axios.get(`${this.currentPageUrl()}/api/${this.$route.params.name}/description`)).data.split("\n");
   }
 }
 </script>
@@ -89,6 +101,15 @@ export default {
     position: absolute;
     left: 300px;
     top: 30px;
+  }
+
+  .description-container {
+    position: absolute;
+    left: 300px;
+    top: 80px;
+    font-size: 9px;
+    color: #a7a7a8;
+    height: 110px;
   }
 
   .listContainer {

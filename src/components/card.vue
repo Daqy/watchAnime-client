@@ -1,9 +1,9 @@
 <template lang="pug">
   router-link.card(:to="{ name: 'anime-info', params: { name: (card.name).toLowerCase() }}" replace)
     .image-container
-      img(:src="card.src")
+      img(:src="card.thumbnailSrc")
     .text-container
-      p {{ this.capitalize(card.name) }}
+      p {{ this.capitalize(this.capitalize(((card.name).split("-").join(" ")))) }}
 </template>
 
 <script>
@@ -33,7 +33,7 @@ export default {
   }
 
   .card:hover {
-    transform: scale(1.05);
+    transform: scale(1.005);
     z-index: 1;
   }
 

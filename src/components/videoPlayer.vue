@@ -1,6 +1,5 @@
 <template lang="pug">
-  video.video(controls :src="videoUrl")
-    source(:src="videoUrl" type="video/mp4")
+  iframe(scrolling="no" width="100%" height="100%" allow="autoplay; fullscreen" sandbox="allow-scripts allow-same-origin allow-forms" :src="videoUrl" frameborder="0")
 </template>
 
 <script>

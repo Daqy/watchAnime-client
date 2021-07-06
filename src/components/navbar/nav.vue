@@ -2,7 +2,7 @@
   .nav
     ul
       li(v-for="nav in navList" :key="nav.key")
-        router-link(:to="nav.path") {{ nav.display }}
+        router-link(:to="{ name: 'list-anime'}" replace) {{ nav.display }}
       slot
 </template>
 

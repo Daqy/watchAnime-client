@@ -9,6 +9,8 @@
         .episodeInformation
           .thumbnail-container
             img(:src="this.thumbnailUrl")
+          .episodeTitleContainer
+            h2 {{ this.capitalize(((this.$route.params.anime).split("-").join(" "))) }}
           .episodeListContainer
             c-episodeList(:episodeList="this.episodeList")
 </template>
@@ -27,36 +29,38 @@ export default {
   data() {
     return {
       animeName: "no-name",
-      videoURL: "no-video",
+      videoURL: "no-videoTest",
       episodeList: [],
       thumbnailUrl: "no-url"
     }
   },
   async created() {
-    const urlData = this.$route.params.anime.split("-")
-    this.animeName = urlData[0]
-
-
-    this.thumbnailUrl = (await this.$axios.get(`${this.currentPageUrl()}/api/${this.animeName}/thumbnail`)).data;
-    this.episodeList = (await this.$axios.get(`${this.currentPageUrl()}/api/${this.animeName}/episodeList`)).data;
-    
-    this.videoURL = await this.requestVideoUrl()
+    await this.requestDataFromServer(this.$route.params.anime)
   },
   async beforeRouteUpdate (to, from, next) {
-    this.videoURL = await this.requestVideoUrl()
+    await this.requestDataFromServer(to.params.anime)
     next()
   },
   computed: {
     currentEpisode() {
-      return parseInt((this.$route.params.anime).split("-")[2]);
+      const urlSplit = (this.$route.params.anime).split("-");
+      return parseInt(urlSplit[urlSplit.length-1]);
     }
   },
   methods: {
-    async requestVideoUrl() {
-      const urlData = this.$route.params.anime.split("-")
-      this.animeName = urlData[0]
-      const episodeNumber = `${urlData[1]}-${urlData[2]}`
-      return (await this.$axios.get(`${this.currentPageUrl()}/api/${this.animeName}/${episodeNumber}`)).data;
+    async requestDataFromServer(params) {
+      const urlData = params.split("-");
+
+      this.animeName = `${urlData[0]}`;
+      for (let index = 1; index < urlData.length-2; index++) {
+        this.animeName += `-${urlData[index]}`;
+      }
+
+      this.thumbnailUrl = (await this.$axios.get(`${this.currentPageUrl()}/api/${this.animeName}/thumbnail`)).data;
+      this.episodeList = (await this.$axios.get(`${this.currentPageUrl()}/api/${this.animeName}/episodeList`)).data;
+
+      const episodeNumber = `${urlData[urlData.length-2]}-${urlData[urlData.length-1]}`
+      this.videoURL = (await this.$axios.get(`${this.currentPageUrl()}/api/${this.animeName}/${episodeNumber}?t=test`)).data;
     }
   }
 }
@@ -84,6 +88,11 @@ export default {
 
   .episodeNavigation {
     margin: 5px 0px;
+  }
+
+  .episodeTitleContainer {
+    width: calc(100% - 210px);
+    float: right;
   }
 
   .episodeListContainer {
